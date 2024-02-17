@@ -1,5 +1,5 @@
 <mat-card>
-  <mat-toolbar color="primary">Product Details</mat-toolbar>
+  <mat-toolbar color="warn">Product Details</mat-toolbar>
   <mat-card-content>
     <form [formGroup]="form" class="min-width">
       <mat-form-field class="full-width">
@@ -80,12 +80,7 @@
     </form>
   </mat-card-content>
   <mat-card-actions class="actions-center">
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="onSubmit()"
-      type="submit"
-    >
+    <button mat-raised-button color="warn" (click)="onSubmit()" type="submit">
       Save
     </button>
     <button

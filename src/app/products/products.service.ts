@@ -44,6 +44,21 @@ export class ProductsService {
     this.products.push(prod);
   }
 
+  update(product: Product): Observable<Product> {
+    if (this.isLocal) {
+      const index = this.products.findIndex((p) => p.id === product.id);
+      if (index !== -1) {
+        this.products[index] = product;
+        return of(product);
+      } else {
+        throw new Error('Product not found in local storage.');
+      }
+    } else {
+      const url = `${this.API}/${product.id}`;
+      return this.http.put<Product>(url, product);
+    }
+  }
+
   private buildProduct(i: number): Product {
     return {
       id: `${i}`,

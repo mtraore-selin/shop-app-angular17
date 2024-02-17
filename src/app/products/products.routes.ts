@@ -7,5 +7,6 @@ import { ProductDetailsComponent } from './product-detail/product-detail.compone
 export const PRODUCT_ROUTES: Routes = [
   { path: '', component: ProductsListComponent },
   { path: 'detail/:id', component: ProductDetailsComponent },
+  { path: 'edit/:id', component: ProductFormComponent },
   { path: 'new', component: ProductFormComponent },
 ];

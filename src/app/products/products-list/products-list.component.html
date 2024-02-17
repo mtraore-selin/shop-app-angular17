@@ -17,10 +17,6 @@
     </div>
     <mat-card-content class="pa-1">
       <div class="product-details">
-        <!-- <div [routerLink]="['/detail', product.id]">
-          <p class="ma-0">{{ product.name }}</p>
-          <p class="ma-0 pa-0 text-md">{{ product.description }}</p>
-        </div> -->
         <button
           mat-button
           class="product-details-button"
@@ -44,6 +40,13 @@
           (click)="addProductToCart(product)"
         >
           <mat-icon>add_shopping_cart</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          color="accent"
+          [routerLink]="['/products/edit', product.id]"
+        >
+          <mat-icon>edit</mat-icon>
         </button>
       </div>
     </mat-card-content>

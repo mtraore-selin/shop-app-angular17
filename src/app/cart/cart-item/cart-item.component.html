@@ -20,12 +20,8 @@
         (selectionChange)="onQuantityChange($event.value, cartItem)"
       >
         @for (quantity of quantityOptions; track quantity) {
-  <mat-option
-         
-          [value]="quantity"
-          >{{ quantity }}</mat-option
-        >
-}
+        <mat-option [value]="quantity">{{ quantity }}</mat-option>
+        }
       </mat-select>
     </mat-form-field>
   </div>

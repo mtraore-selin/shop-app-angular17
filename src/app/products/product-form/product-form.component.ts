@@ -1,4 +1,106 @@
-import { Location } from '@angular/common';
+// import { Location } from '@angular/common';
+// import { Component, inject } from '@angular/core';
+// import {
+//   FormControl,
+//   FormGroup,
+//   ReactiveFormsModule,
+//   Validators,
+// } from '@angular/forms';
+// import { MatButtonModule } from '@angular/material/button';
+// import { MatCardModule } from '@angular/material/card';
+// import { MatOptionModule } from '@angular/material/core';
+// import { MatFormFieldModule } from '@angular/material/form-field';
+// import { MatInputModule } from '@angular/material/input';
+// import { MatSelectModule } from '@angular/material/select';
+// import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+// import { MatToolbarModule } from '@angular/material/toolbar';
+
+// import { Product } from '../product';
+// import { ProductsService } from '../products.service';
+// import { FormUtilsService } from './../../shared/form/form-utils.service';
+
+// @Component({
+//   selector: 'app-product-form',
+//   templateUrl: './product-form.component.html',
+//   styleUrls: ['./product-form.component.scss'],
+//   standalone: true,
+//   imports: [
+//     MatCardModule,
+//     MatToolbarModule,
+//     ReactiveFormsModule,
+//     MatFormFieldModule,
+//     MatInputModule,
+//     MatSelectModule,
+//     MatOptionModule,
+//     MatButtonModule,
+//     MatSnackBarModule,
+//   ],
+// })
+// export class ProductFormComponent {
+//   images: string[] = [];
+//   form = new FormGroup({
+//     id: new FormControl(''),
+//     name: new FormControl('', [
+//       Validators.required,
+//       Validators.minLength(5),
+//       Validators.maxLength(100),
+//     ]),
+//     description: new FormControl('', [
+//       Validators.required,
+//       Validators.minLength(5),
+//       Validators.maxLength(100),
+//     ]),
+//     price: new FormControl(0, [
+//       Validators.required,
+//       Validators.min(1),
+//       Validators.max(500),
+//     ]),
+//     image: new FormControl('', [Validators.required]),
+//     status: new FormControl(''),
+//     discounted: new FormControl('', [Validators.max(400)]),
+//     discount: new FormControl(0),
+//   });
+
+//   formUtils = inject(FormUtilsService);
+//   private snackBar = inject(MatSnackBar);
+//   private location = inject(Location);
+//   private productsService = inject(ProductsService);
+
+//   constructor() {
+//     this.generateImages();
+//   }
+
+//   private generateImages() {
+//     for (let num = 1; num <= 14; num++) {
+//       this.images.push(`${num}`);
+//     }
+//   }
+
+//   onSubmit() {
+//     if (this.form.valid) {
+//       this.productsService.create(this.form.value as Product).subscribe({
+//         next: () => this.onSuccess(),
+//         error: () => this.onError(),
+//       });
+//     } else {
+//       this.formUtils.validateAllFormFields(this.form);
+//     }
+//   }
+
+//   private onSuccess() {
+//     this.snackBar.open('Product saved successfully!', '', { duration: 5000 });
+//     this.form.reset();
+//   }
+
+//   private onError() {
+//     this.snackBar.open('Error saving product.', '', { duration: 10000 });
+//   }
+
+//   onCancel() {
+//     this.location.back();
+//   }
+// }
+
 import { Component, inject } from '@angular/core';
 import {
   FormControl,
@@ -6,6 +108,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { Location } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatOptionModule } from '@angular/material/core';
@@ -14,10 +117,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
-
-import { Product } from '../product';
+import { ActivatedRoute } from '@angular/router';
 import { ProductsService } from '../products.service';
-import { FormUtilsService } from './../../shared/form/form-utils.service';
+import { Product } from '../product';
+import { FormUtilsService } from '../../shared/form/form-utils.service';
 
 @Component({
   selector: 'app-product-form',
@@ -66,8 +169,9 @@ export class ProductFormComponent {
   private location = inject(Location);
   private productsService = inject(ProductsService);
 
-  constructor() {
+  constructor(private route: ActivatedRoute) {
     this.generateImages();
+    this.loadProductForEdit();
   }
 
   private generateImages() {
@@ -76,24 +180,56 @@ export class ProductFormComponent {
     }
   }
 
+  private loadProductForEdit() {
+    // Check if route has product ID parameter for editing
+    this.route.params.subscribe((params) => {
+      const productId = params['id'];
+      if (productId) {
+        this.productsService.getProductById(productId).subscribe({
+          next: (product: Product | undefined) => {
+            if (product) {
+              this.form.patchValue(product); // Populate form with product details
+            } else {
+              console.error('Product not found.');
+            }
+          },
+          error: (error: any) => {
+            console.error('Error fetching product:', error);
+          },
+        });
+      }
+    });
+  }
+
   onSubmit() {
     if (this.form.valid) {
-      this.productsService.create(this.form.value as Product).subscribe({
-        next: () => this.onSuccess(),
-        error: () => this.onError(),
-      });
+      const productData = this.form.value as Product;
+      if (productData.id) {
+        // Edit existing product
+        this.productsService.update(productData).subscribe({
+          next: () => this.onSuccess('Product updated successfully!'),
+          error: () => this.onError('Error updating product.'),
+        });
+      } else {
+        // Create new product
+        this.productsService.create(productData).subscribe({
+          next: () => this.onSuccess('Product created successfully!'),
+          error: () => this.onError('Error creating product.'),
+        });
+      }
     } else {
       this.formUtils.validateAllFormFields(this.form);
     }
   }
 
-  private onSuccess() {
-    this.snackBar.open('Product saved successfully!', '', { duration: 5000 });
+  private onSuccess(message: string) {
+    this.snackBar.open(message, '', { duration: 5000 });
     this.form.reset();
+    this.location.back(); // Navigate back after success
   }
 
-  private onError() {
-    this.snackBar.open('Error saving product.', '', { duration: 10000 });
+  private onError(message: string) {
+    this.snackBar.open(message, '', { duration: 10000 });
   }
 
   onCancel() {
