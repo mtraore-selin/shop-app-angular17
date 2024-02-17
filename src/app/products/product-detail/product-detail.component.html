@@ -1,0 +1,35 @@
+@if (product) {
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>{{ product.name }}</mat-card-title>
+    <mat-card-subtitle>{{ product.description }}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <img
+      mat-card-image
+      src="assets/images/{{ product.image }}.jpg"
+      alt="{{ product.name }}"
+    />
+    <p>Price: ${{ product.price }}</p>
+    @if (product.discounted === 'discounted') {
+    <span class="strikethrough mat-text-muted text-sm"
+      >$ {{ product.discount }}</span
+    >
+    }
+
+    <button mat-raised-button color="primary" (click)="addToCart()">
+      Add to Cart
+    </button>
+  </mat-card-content>
+</mat-card>
+}
+
+<button
+  mat-raised-button
+  color="accent"
+  [routerLink]="['/']"
+  class="go-to-products"
+>
+  Home
+</button>
