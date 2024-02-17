@@ -3,11 +3,28 @@
   <mat-card>
     <div class="media-grid">
       <figure class="product-figure">
-        @if (product.status === 'sale') {
-        <div class="product-badge">
+        @switch (product.status) { @case ("sale") {
+        <div class="product-badge-sale">
           <span>Sale</span>
         </div>
-        }
+        } @case ("feat") {
+        <div class="product-badge-feat">
+          <span>Feat</span>
+        </div>
+        } @case ("new") {
+        <div class="product-badge-new">
+          <span>New</span>
+        </div>
+        } @case ("oos") {
+        <div class="product-badge-oos">
+          <span>Oos</span>
+        </div>
+        } @case ("feat") {
+        <div class="product-badge-feat">
+          <span>Feat</span>
+        </div>
+        } }
+
         <img
           src="assets/images/{{ product.image }}.jpg"
           height="245px"
@@ -29,10 +46,10 @@
         <div class="mat-text-primary text-xl">
           @if (product.discounted === 'discounted') {
           <span class="strikethrough mat-text-muted text-sm"
-            >$ {{ product.discount }}</span
+            >€ {{ product.discount }}</span
           >
           }
-          <span> $ {{ product.price }}</span>
+          <span> € {{ product.price }}</span>
         </div>
         <button
           mat-icon-button

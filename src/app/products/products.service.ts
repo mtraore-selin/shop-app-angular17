@@ -63,7 +63,7 @@ export class ProductsService {
     return {
       id: `${i}`,
       price: parseFloat((Math.random() * (0.0 - 10.0) + 10.0).toFixed(2)),
-      status: ['', '', '', 'sale'][Math.floor(Math.random() * 4)],
+      status: ['sale', 'new', 'feat', 'oos'][Math.floor(Math.random() * 4)],
       discounted: ['', '', '', 'discounted'][Math.floor(Math.random() * 4)],
       discount: parseFloat((Math.random() * (0.0 - 10.0) + 10.0).toFixed(2)),
       name: ['Coffee'][Math.floor(Math.random() * 1)],
